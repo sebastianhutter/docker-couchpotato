@@ -1,15 +1,18 @@
-FROM fedora:23
+FROM debian:jessie
 
 # set workdir
 WORKDIR /
 
-# install couchpotato requirements
-RUN dnf install -y git gcc redhat-rpm-config python-devel libffi-devel \
-  openssl-devel curl python-pip libxml2-devel libxslt-devel && \
-  pip install --upgrade pip && \
-  pip install --upgrade pyOpenSSL j2cli lxml
+# install requirements
+RUN apt-get update \
+  && apt-get install -y python python-pip curl git \
+     gcc libssl-dev libffi-dev python-dev libxml2-dev libxslt1-dev \
+  && pip install --upgrade pip \
+  && pip install --upgrade appdirs cffi pyparsing lxml pyOpenSSL j2cli \
+  && apt-get remove --purge -y gcc libssl-dev libffi-dev python-dev libxml2-dev libxslt1-dev \
+  && rm -rf /var/lib/apt/lists/*
 
-# download couchpotato
+# download sabnzbd and nzbtomedia
 RUN git clone https://github.com/CouchPotato/CouchPotatoServer.git
 
 # copy the couchpotato configuration file
